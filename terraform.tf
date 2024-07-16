@@ -1,75 +1,68 @@
-
 provider "aws" {
-  region     = "us-east-1"
+  region = "us-east-1"  # Update with your preferred AWS region
 }
 
-
-resource "aws_vpc" "myvpc9" {
-  cidr_block       = "10.0.0.0/16"
-  instance_tenancy = "default"
-
-  tags = {
-    Name = "myvpc9"
-  }
+resource "aws_vpc" "main" {
+  cidr_block = "10.0.0.0/16"
 }
-resource "aws_internet_gateway" "mygw9" {
-  vpc_id = aws_vpc.myvpc9.id
 
-  tags = {
-    Name = "mygw9"
-  }
+resource "aws_subnet" "public" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.0.1.0/24"
+  availability_zone = "us-east-1a"  # Update with your preferred AZ
 }
-resource "aws_route_table" "myrt9" {
-  vpc_id = aws_vpc.myvpc9.id
+
+resource "aws_internet_gateway" "gw" {
+  vpc_id = aws_vpc.main.id
+}
+
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.mygw9.id
-  }
-
-  tags = {
-    Name = "myrt9"
+    gateway_id = aws_internet_gateway.gw.id
   }
 }
-resource "aws_route_table_association" "myrta9" {
-  subnet_id      = aws_subnet.mysubnet9.id
-  route_table_id = aws_route_table.myrt9.id
 
-resource "aws_security_group" "mysg9" {
-  name        = "mysg9"
-  description = "Allow inbound traffic"
-  vpc_id      = aws_vpc.myvpc9.id
+resource "aws_route_table_association" "public" {
+  subnet_id      = aws_subnet.public.id
+  route_table_id = aws_route_table.public.id
+}
+
+resource "aws_security_group" "instance_sg" {
+  vpc_id = aws_vpc.main.id
 
   ingress {
-    description      = "HTTP"
-    from_port        = 80
-    to_port          = 80
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    description      = "SSH"
-    from_port        = 22
-    to_port          = 22
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
+  // Allow outbound traffic to anywhere
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
-resource "aws_instance" "instance9" {
-  instance_type = "t2.micro"
-  associate_public_ip_address = true
-  subnet_id = aws_subnet.mysubnet9.id
-  vpc_security_group_ids = [aws_security_group.mysg9.id]
-  key_name = "securitykey2"
+}
+
+# EC2 Instance
+resource "aws_instance" "Prod Server" {
+  instance_type = "t2.micro" 
+  subnet_id     = aws_subnet.public.id
+  security_groups = [
+    aws_security_group.instance_sg.id
+  ]
 
   tags = {
     Name = "Prod Server"
