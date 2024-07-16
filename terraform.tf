@@ -75,7 +75,4 @@ resource "aws_instance" "instance9" {
     Name = "Prod Server"
   }
 }
-  tags = {
-    Name = "mysg9"
-  }
-}
+
