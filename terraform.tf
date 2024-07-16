@@ -80,14 +80,14 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv6" {
   cidr_ipv6         = "::/0"
   ip_protocol       = "-1" # semantically equivalent to all ports
 }
-resource "aws_instance" "Prod Server" {
+resource "aws_instance" "Prod_Server" {
   instance_type = "t2.micro"
   associate_public_ip_address = true
-  subnet_id = subnet-032d9d946439624b2
+  subnet_id = 032d9d946439624b2
   vpc_security_group_ids = sg-09f31579683c3fb4a
   key_name = "securitykey2"
 
   tags = {
-    Name = "Prod Server"
+    Name = "Prod_Server"
   }
 }
