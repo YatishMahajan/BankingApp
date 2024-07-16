@@ -1,12 +1,11 @@
-resource "aws_instance" "demo" {
-  ami           = ""
+resource "aws_instance" "Prod_Server" {
+  ami = "ami-04a81a99f5ec58529"
   instance_type = "t2.micro"
   associate_public_ip_address = true
-  subnet_id = aws_subnet.mysubnet9.id
-  vpc_security_group_ids = [aws_security_group.mysg9.id]
-  key_name = "awskey-124"
-
+  subnet_id = "032d9d946439624b2"
+  vpc_security_group_ids = ["sg-09f31579683c3fb4a"]
+  key_name = "securitykey2"
   tags = {
-    Name = "Dummy_Server0"
+    Name = "Prod_Server"
   }
 }
