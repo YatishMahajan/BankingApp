@@ -21,7 +21,7 @@ resource "aws_subnet" "my_subnet" {
   }
 }
 
-resource "aws_network_interface" "foo" {
+resource "aws_network_interface" "Prod_Server" {
   subnet_id   = "${aws_subnet.my_subnet.id}"
   private_ips = ["172.16.10.100"]
 
@@ -30,12 +30,8 @@ resource "aws_network_interface" "foo" {
   }
 }
 
-resource "aws_instance" "foo" {
-  ami           = "ami-22b9a343" # us-west-2
-  instance_type = "t2.micro"
-
   network_interface {
-    network_interface_id = "${aws_network_interface.foo.id}"
+    network_interface_id = "${aws_network_interface.Prod_Server.id}"
     device_index         = 0
   }
 
@@ -81,6 +77,7 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv6" {
   ip_protocol       = "-1" # semantically equivalent to all ports
 }
 resource "aws_instance" "Prod_Server" {
+  ami= "ami-04a81a99f5ec58529"
   instance_type = "t2.micro"
   associate_public_ip_address = true
   subnet_id = "032d9d946439624b2"
