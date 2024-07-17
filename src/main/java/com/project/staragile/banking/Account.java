@@ -59,7 +59,9 @@ public class Account {
 	public void setAccountBalance(double accountBalance) {
 		this.accountBalance = accountBalance;
 	}
-	
+	public void setAccountBalance(double accountBalance) {
+		this.accountBalance2 = accountBalance2;
+	}
 	
 	
 	
